@@ -13,3 +13,7 @@ async function loadComponent(selecter, path) {
 const navbarUrl = new URL("../components/navbar.html", import.meta.url);
 
 loadComponent("#navbar", navbarUrl);
+
+const footerUrl = new URL("../components/footer.html", import.meta.url);
+
+loadComponent("#footer", footerUrl);
