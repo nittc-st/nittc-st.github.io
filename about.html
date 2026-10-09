@@ -6,14 +6,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>活動内容</title>
 
-  <!-- index.html と同じBootstrap CSSの読み込みを書く -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script type="module" src="./js/common.js"></script>
 </head>
+
 <body>
-  <!-- index.html と同じnavbarをここに貼る -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container">
+    <a class="navbar-brand" href="./index.html">苫小牧工業高等専門学校 <br> ソフトウェアテクノロジー部 ホームページ</a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="ナビゲーションを開く"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link" href="./about.html">活動内容</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="./form.html">質問フォーム</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="./calender.html">活動カレンダー</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="./document.html">資料置き場</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="./chiebukuro.html">ソフテク知恵袋</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
 
   <main class="container py-4">
-    <h1>活動内容</h1>
-    <p>ここに部活の活動内容を書きます。</p>
+    <h1 class="display-4">活動内容</h1>
+
+    <h2 class="fs-3 mb-1">概要について</h2>
+    <p>ソフトウェアテクノロジー部では、全国高等専門学校プログラミングコンテストやその他のコンテスト、高専祭に向けての活動などを行っています。</p>
+
+    <h2 class="fs-3 mb-1">全国高等専門学校プログラミングコンテストについて</h2>
+    <p></p>
+
+    <h2 class="fs-3 mb-1">高専祭での活動について</h2>
+    <p></p>
+
+    <h2 class="mb-4">活動日</h2>
+    <div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th scope="col" class="p-3">曜日</th>
+        <th scope="col" class="p-3">時間</th>
+        <th scope="col" class="p-3">活動内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="p-3">火曜日</td>
+        <td class="p-3">15:40〜17:00</td>
+        <td class="p-3">不定</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
   </main>
 
   <!-- index.html と同じBootstrap JavaScriptの読み込みを書く -->
