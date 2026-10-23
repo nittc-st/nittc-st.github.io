@@ -1,0 +1,5 @@
+.title::before {
+    content: "›";
+    margin-right: 1.0rem;
+    color: var(--bs-secondary-color);
+}
