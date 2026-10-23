@@ -12,7 +12,11 @@ async function loadComponent(selecter, path) {
 
 const navbarUrl = new URL("../components/navbar.html", import.meta.url);
 
-loadComponent("#navbar", navbarUrl);
+loadComponent("#navbar", navbarUrl).then(() => {
+    document.querySelectorAll("#navbar a[href]").forEach(a => {
+        a.href = new URL(a.getAttribute("href"), new URL("../", import.meta.url));
+    });
+});
 
 const footerUrl = new URL("../components/footer.html", import.meta.url);
 
