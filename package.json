@@ -1,0 +1,16 @@
+{
+  "name": "nittc-st-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-content.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "gray-matter": "4.0.3",
+    "yaml": "2.9.1"
+  }
+}

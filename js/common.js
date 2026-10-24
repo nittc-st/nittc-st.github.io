@@ -1,3 +1,4 @@
+// 共通部品のHTMLを取得し、指定した要素内に表示する関数
 async function loadComponent(selecter, path) {
     const response = await fetch(path);
 
