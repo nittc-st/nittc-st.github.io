@@ -21,3 +21,9 @@
     border: 0;
     background: #000;
 }
+
+@media (pointer: coarse) {
+    .runner-frame {
+        aspect-ratio: 4 / 5;
+    }
+}

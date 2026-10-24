@@ -53,6 +53,62 @@ class GameTests(unittest.TestCase):
         self.assertEqual(self.app.scene, self.game["MAIN"])
         self.pyxel.playm.assert_called_once_with(self.game["BGM"], loop=True)
 
+    def test_sound_button_and_select(self):
+        x, y, width, height = self.game["SOUND_BUTTON"]
+        self.pyxel.mouse_x = x + width // 2
+        self.pyxel.mouse_y = y + height // 2
+        self.pyxel.btnp.side_effect = lambda key: key == self.pyxel.MOUSE_BUTTON_LEFT
+        self.tick(1)
+        self.assertFalse(self.app.is_muted)
+        self.assertEqual([channel.gain for channel in self.pyxel.channels], [0.125] * 4)
+        self.pyxel.mouse_x = 10
+        self.tick(2)
+        self.assertFalse(self.app.is_muted)
+        self.pyxel.btnp.side_effect = lambda key: key == self.pyxel.GAMEPAD1_BUTTON_BACK
+        self.tick(3)
+        self.assertTrue(self.app.is_muted)
+        self.assertEqual([channel.gain for channel in self.pyxel.channels], [0] * 4)
+
+    def test_gamepad_start_result_and_restart(self):
+        self.pressed.add(self.pyxel.GAMEPAD1_BUTTON_A)
+        self.tick(1)
+        self.assertEqual(self.app.scene, self.game["COUNT"])
+        self.pressed.clear()
+        self.tick(121)
+        self.assertEqual(self.app.scene, self.game["MAIN"])
+        self.app.life = 1
+        self.app.player_y = 128
+        self.tick(122)
+        self.assertEqual(self.app.scene, self.game["GM_OV"])
+        self.released.add(self.pyxel.GAMEPAD1_BUTTON_A)
+        self.tick(123)
+        self.assertEqual(self.app.scene, self.game["RESULT"])
+        self.released.clear()
+        self.tick(124)
+        self.assertEqual(self.app.scene, self.game["RESULT"])
+        self.released.add(self.pyxel.GAMEPAD1_BUTTON_A)
+        self.tick(125)
+        self.assertEqual(self.app.scene, self.game["TITLE"])
+        self.assertEqual(self.app.life, 3)
+
+    def test_gamepad_movement_jump_and_respawn_movement(self):
+        self.app.scene = self.game["MAIN"]
+        self.pyxel.tilemaps[0].pget.return_value = (2, 0)
+        self.pressed.add(self.pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        self.tick(1)
+        self.assertAlmostEqual(self.app.player_x, 41.04)
+        self.pressed = {self.pyxel.GAMEPAD1_BUTTON_DPAD_LEFT, self.pyxel.GAMEPAD1_BUTTON_A}
+        self.pyxel.tilemaps[0].pget.return_value = (0, 0)
+        self.tick(2)
+        self.assertAlmostEqual(self.app.player_x, 40)
+        self.assertEqual(self.app.player_y, 100)
+        self.app.player_y = 128
+        self.tick(3)
+        self.pressed = {self.pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT}
+        self.tick(33)
+        self.assertEqual(self.app.player_x, 42)
+        self.assertTrue(self.app.is_falling)
+
     def test_respawn_wait_blink_and_landing(self):
         self.app.scene = self.game["MAIN"]
         self.app.player_y = 128
@@ -95,7 +151,7 @@ class GameTests(unittest.TestCase):
         self.assertEqual(self.app.scene, self.game["RESULT"])
         self.app.draw()
         texts = [call.args[2] for call in self.pyxel.text.call_args_list]
-        self.assertEqual(texts, ["GAME OVER", "score: 128", "Press Space to restart!"])
+        self.assertEqual(texts, ["GAME OVER", "score: 128", "Space / JUMP: Retry", "SOUND OFF"])
         self.tick(12)
         self.assertEqual(self.app.scene, self.game["TITLE"])
         self.assertEqual((self.app.life, self.app.get_score()), (3, 0))

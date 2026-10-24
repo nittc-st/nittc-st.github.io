@@ -1,0 +1,109 @@
+<style>
+  #touch-controls {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    div#pyxel-screen {
+      height: calc(100% - 80px);
+    }
+
+    #touch-controls {
+      position: absolute;
+      inset: auto 0 0;
+      box-sizing: border-box;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: #202224;
+    }
+
+    #touch-controls .directions {
+      display: flex;
+      gap: 8px;
+    }
+
+    #touch-controls button {
+      min-width: 64px;
+      height: 56px;
+      border: 1px solid #7696de;
+      border-radius: 8px;
+      background: #2b335f;
+      color: #eee;
+      font: bold 18px sans-serif;
+      touch-action: none;
+      user-select: none;
+    }
+
+    #touch-controls button[aria-pressed="true"] {
+      background: #395c98;
+    }
+  }
+</style>
+<div id="touch-controls" role="group" aria-label="ゲーム操作">
+  <div class="directions">
+    <button type="button" data-code="ArrowLeft" aria-label="左に移動" aria-pressed="false">←</button>
+    <button type="button" data-code="ArrowRight" aria-label="右に移動" aria-pressed="false">→</button>
+  </div>
+  <button type="button" data-code="Space" aria-label="ジャンプ・開始・次へ" aria-pressed="false">JUMP</button>
+</div>
+<script>
+  (() => {
+    const controls = document.querySelector('#touch-controls');
+    const held = new Map();
+    const keys = { ArrowLeft: ['ArrowLeft', 37], ArrowRight: ['ArrowRight', 39], Space: [' ', 32] };
+
+    // 画面上のボタンを既存のキーボード入力へ変換する。ゲーム処理はPython側で行う。
+    function sendKey(type, code) {
+      const [key, keyCode] = keys[code];
+      document.querySelector('canvas')?.dispatchEvent(new KeyboardEvent(type, {
+        key, code, keyCode, which: keyCode, bubbles: true, cancelable: true,
+      }));
+    }
+
+    // キャンセルや画面切り替えでもキーが押されたままにならないよう解除する。
+    function release(pointerId) {
+      const button = held.get(pointerId);
+      if (!button) {
+        return;
+      }
+      held.delete(pointerId);
+      if (![...held.values()].includes(button)) {
+        sendKey('keyup', button.dataset.code);
+        button.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    for (const button of controls.querySelectorAll('button')) {
+      button.addEventListener('pointerdown', event => {
+        if (event.button !== 0) {
+          return;
+        }
+        event.preventDefault();
+        const canvas = document.querySelector('canvas');
+        if (document.querySelector('#pyxel-prompt')) {
+          canvas.click();
+          return;
+        }
+        canvas?.focus({ preventScroll: true });
+        button.setPointerCapture(event.pointerId);
+        if (![...held.values()].includes(button)) {
+          sendKey('keydown', button.dataset.code);
+        }
+        held.set(event.pointerId, button);
+        button.setAttribute('aria-pressed', 'true');
+      });
+      for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+        button.addEventListener(type, event => release(event.pointerId));
+      }
+    }
+    window.addEventListener('blur', () => [...held.keys()].forEach(release));
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        [...held.keys()].forEach(release);
+      }
+    });
+  })();
+</script>

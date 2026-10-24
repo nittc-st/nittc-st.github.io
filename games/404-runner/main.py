@@ -4,6 +4,7 @@ from pathlib import Path
 HEIGHT = 128
 WIDTH  = 128
 FPS = 30
+SOUND_BUTTON = (86, 14, 40, 9)
 PLAYER_X_INIT = 40
 PLAYER_Y_INIT = HEIGHT - 24
 DELTA_X_INIT  = 1
@@ -34,6 +35,7 @@ CHECK_POINT = [(2, 0), (6, 0), (2, 7), (6, 7)]
 class App:
     def __init__(self):
         pyxel.init(WIDTH, HEIGHT, fps=FPS)
+        pyxel.mouse(True)
         pyxel.load(str(Path(__file__).with_name("my_resource.pyxres")))
         self.sound_gains = [channel.gain for channel in pyxel.channels]
         self.is_muted = True
@@ -89,8 +91,18 @@ class App:
     def update(self):
         """Calculate the positions of what the app will have to draw.
         """
-        # 初期状態は消音。MキーでBGM・効果音をまとめて切り替える。
-        if pyxel.btnp(pyxel.KEY_M):
+        # 初期状態は消音。ゲーム内ボタン・M・SELECTで切り替える。
+        x, y, width, height = SOUND_BUTTON
+        sound_clicked = (
+            pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT)
+            and x <= pyxel.mouse_x < x + width
+            and y <= pyxel.mouse_y < y + height
+        )
+        if (
+            pyxel.btnp(pyxel.KEY_M)
+            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_BACK)
+            or sound_clicked
+        ):
             self.is_muted = not self.is_muted
             for channel, gain in zip(pyxel.channels, self.sound_gains):
                 channel.gain = 0 if self.is_muted else gain
@@ -124,7 +136,11 @@ class App:
     def update_title(self):
         """Scan Key Space and then transfer to COUNT.
         """
-        if pyxel.btn(pyxel.KEY_SPACE):
+        if (
+            pyxel.btn(pyxel.KEY_SPACE)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_START)
+        ):
             self.scene = COUNT
             self.count_started_at = pyxel.frame_count
 
@@ -149,13 +165,21 @@ class App:
     def update_gameover(self):
         """Scan key space and then transfer to RESULT.
         """
-        if pyxel.btnr(pyxel.KEY_SPACE):
+        if (
+            pyxel.btnr(pyxel.KEY_SPACE)
+            or pyxel.btnr(pyxel.GAMEPAD1_BUTTON_A)
+            or pyxel.btnr(pyxel.GAMEPAD1_BUTTON_START)
+        ):
             self.scene = RESULT
 
     def update_result(self):
         """Update result.
         """
-        if pyxel.btnr(pyxel.KEY_SPACE):
+        if (
+            pyxel.btnr(pyxel.KEY_SPACE)
+            or pyxel.btnr(pyxel.GAMEPAD1_BUTTON_A)
+            or pyxel.btnr(pyxel.GAMEPAD1_BUTTON_START)
+        ):
             self._init_values()
         pass
 
@@ -211,12 +235,25 @@ class App:
     def move_by_key(self):
         """Move the player when was pushed the keys.
         """
-        if (pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.KEY_A)) and self.can_foward:
+        if (
+            pyxel.btn(pyxel.KEY_LEFT)
+            or pyxel.btn(pyxel.KEY_A)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
+        ) and self.can_foward:
             self.player_x = max(self.player_x - (self.player_dx + self.speed * 0.02), 0)
-        if (pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_D)) and self.can_foward:
+        if (
+            pyxel.btn(pyxel.KEY_RIGHT)
+            or pyxel.btn(pyxel.KEY_D)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        ) and self.can_foward:
             self.player_x = min(self.player_x + (self.player_dx + self.speed * 0.02), pyxel.width - 8)
         if self.is_land and self.can_jump:
-            if (pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.KEY_W)):
+            if (
+                pyxel.btn(pyxel.KEY_UP)
+                or pyxel.btn(pyxel.KEY_SPACE)
+                or pyxel.btn(pyxel.KEY_W)
+                or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A)
+            ):
                 pyxel.play(SE_CH, JUMP_SE, loop=False)
                 self.is_land = False
                 self.player_dy = 4
@@ -291,9 +328,17 @@ class App:
             self.move_if_into_block()
             return
         self.player_y += 1.5
-        if (pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_D)) and not self.is_block_right():
+        if (
+            pyxel.btn(pyxel.KEY_RIGHT)
+            or pyxel.btn(pyxel.KEY_D)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+        ) and not self.is_block_right():
             self.player_x = min(self.player_x + 2, pyxel.width - 8)
-        elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.KEY_A):
+        elif (
+            pyxel.btn(pyxel.KEY_LEFT)
+            or pyxel.btn(pyxel.KEY_A)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
+        ):
             self.player_x = max(self.player_x - 2, 0)
 
     def has_fallen(self) -> bool:
@@ -371,11 +416,15 @@ class App:
         elif self.scene == RESULT:
             self.draw_result()
 
+        x, y, width, height = SOUND_BUTTON
+        pyxel.rect(x, y, width, height, pyxel.COLOR_NAVY)
+        pyxel.text(x + 2, y + 2, "SOUND OFF" if self.is_muted else "SOUND ON", pyxel.COLOR_WHITE)
+
     def draw_title(self):
         """Draw the title page.
         """
         pyxel.cls(0)
-        pyxel.text(pyxel.width // 2 - 22, pyxel.height // 2, "Press Space!", pyxel.COLOR_WHITE)
+        pyxel.text(pyxel.width // 2 - 24, pyxel.height // 2, "Space / JUMP", pyxel.COLOR_WHITE)
 
     def draw_count(self):
         """Draw the count down.
@@ -407,7 +456,7 @@ class App:
         """
         self.draw_main()
         pyxel.text(pyxel.width // 2 - 19, pyxel.height // 2 - 20, "GAME OVER!", pyxel.COLOR_NAVY)
-        pyxel.text(pyxel.width // 2 - 22, pyxel.height // 2 + 30, "Pless Space!", pyxel.COLOR_NAVY)
+        pyxel.text(pyxel.width // 2 - 24, pyxel.height // 2 + 30, "Space / JUMP", pyxel.COLOR_NAVY)
 
     def draw_result(self):
         """Draw the result page.
@@ -415,7 +464,7 @@ class App:
         pyxel.cls(0)
         pyxel.text(pyxel.width // 2 - 18, pyxel.height // 2 - 40, "GAME OVER", pyxel.COLOR_WHITE)
         pyxel.text(pyxel.width // 2 - 16, pyxel.height // 2 - 20, "score: {}".format(self.get_score()), pyxel.COLOR_WHITE)
-        pyxel.text(pyxel.width // 2 - 45, pyxel.height // 2 + 40, "Press Space to restart!", pyxel.COLOR_WHITE)
+        pyxel.text(pyxel.width // 2 - 36, pyxel.height // 2 + 40, "Space / JUMP: Retry", pyxel.COLOR_WHITE)
 
     def get_beside_tile(self) -> tuple[tuple[int]]:
         """Get a position of a tile of around the player.

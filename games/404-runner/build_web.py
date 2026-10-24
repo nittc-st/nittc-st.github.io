@@ -26,7 +26,11 @@ def main():
             cwd=output,
             check=True,
         )
-        shutil.copyfile(output / "404-runner.html", source / "game.html")
+        # 標準の多ボタンパッドを外し、左右・ジャンプだけの操作UIを付ける。
+        html = (output / "404-runner.html").read_text(encoding="utf-8")
+        html = html.replace('gamepad: "enabled", ', '')
+        controls = (source / "web_controls.html").read_text(encoding="utf-8")
+        (source / "game.html").write_text(html + controls, encoding="utf-8")
     print(f"Generated: {source / 'game.html'}")
 
 
