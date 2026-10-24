@@ -17,7 +17,7 @@ ENDING = [
     "",
     "つくった：苫小牧高専 ソフトウェアテクノロジー部",
     "つかった：Pyxel",
-    "フォント：umplus_j10r",
+    "フォント：美咲フォント",
     "",
     "プレイしてくれて ありがとう！",
 ]
@@ -136,8 +136,8 @@ class Game:
         pyxel.rect(36, 30, ui.W - 72, 44, 0)
         pyxel.rectb(36, 30, ui.W - 72, 44, 10)
         pyxel.rectb(38, 32, ui.W - 76, 40, 9)
-        ui.text_center(38, "ソフテクRPG", 10, 8)
-        ui.text_center(56, "～ バグを たおして プロコンへ ～", 7)
+        ui.text_big(36, "ソフテクRPG", 10, 8)
+        ui.text_center(61, "～ バグを たおして プロコンへ ～", 7)
         if f // 30 % 2:
             ui.text_center(166, "Zキー / スペースで はじめる", 7, 0)
         ui.text_center(180, "矢印:いどう  Z:けってい  X:ステータス・もどる", 13)

@@ -38,11 +38,13 @@ python main.py
 | `player.py` | プレイヤーのステータスとレベルアップ |
 | `sprites.py` | 人物・マップ・バグの描画（画像ファイルは使わず図形で描いている） |
 | `ui.py` | フォント、効果音・BGM、メッセージウィンドウ |
-| `subset_font.py` | フォントからゲームで使う文字だけを抜き出す |
+| `subset_font.py` | `fonts/` のフォントから、ゲームで使う文字だけを `assets/font.bdf` に抜き出す |
 
 セリフは `ui.Script` に `say()` で積みます。新しい文字を使ったら `build.sh`（または `python subset_font.py`）でフォントを作り直してください。
 足りない文字があると、`subset_font.py` がその文字を表示して失敗します。
 
 ## フォント
 
-`assets/font.bdf` は、Pyxel に付属する umplus_j10r（Copyright (C) 2002-2004 COZ）から、必要な文字だけを抜き出したものです。
+`fonts/misaki_gothic_2nd.bdf` は、門真 なむ さんの [美咲フォント](https://littlelimit.net/misaki.htm)（8×8ドット、美咲ゴシック第2、2021-05-05版）です。
+ライセンスは同じフォルダの `fonts/misaki.txt` のとおりで、改変・再配布を含めて自由に使えます。
+`assets/font.bdf` は、そこからゲームで使う文字だけを抜き出したものです。

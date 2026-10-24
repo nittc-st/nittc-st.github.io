@@ -1,16 +1,14 @@
-"""Pyxel に付属する日本語フォントから、ゲームで使う文字だけを抜き出して assets/font.bdf を作る。
+"""fonts/ の美咲フォントから、ゲームで使う文字だけを抜き出して assets/font.bdf を作る。
 
-元のフォントは 1MB ほどあり、そのままでは HTML に書き出したときに重くなるため。
+元のフォントは 750KB ほどあり、そのままでは HTML に書き出したときに重くなるため。
 セリフを変えたら build.sh(またはこのスクリプト)を実行し直すこと。
 """
 
 import sys
 from pathlib import Path
 
-import pyxel
-
 HERE = Path(__file__).resolve().parent
-SOURCE = Path(pyxel.__file__).parent / "examples" / "assets" / "umplus_j10r.bdf"
+SOURCE = HERE / "fonts" / "misaki_gothic_2nd.bdf"
 OUTPUT = HERE / "assets" / "font.bdf"
 
 
