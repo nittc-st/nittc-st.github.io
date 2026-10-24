@@ -1,7 +1,34 @@
 import markdownit from 'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/+esm';
+import hljs from 'https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/lib/common/+esm';
+import http from 'https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/lib/languages/http/+esm';
+
+hljs.registerLanguage('http', http);
+
+// 対応する言語のコードを色分けし、未指定・未対応の場合は通常表示に戻す関数
+function highlightCode(source, language) {
+    if (!language || !hljs.getLanguage(language)) {
+        return '';
+    }
+
+    try {
+        return hljs.highlight(source, {
+            language,
+            ignoreIllegals: true,
+        }).value;
+    } catch {
+        // 空文字を返すとmarkdown-itが元のコードをHTMLエスケープする。
+        return '';
+    }
+}
 
 // Raw HTML is disabled; markdown-it also rejects unsafe link/image protocols.
-const markdown = markdownit({ html: false, linkify: false, breaks: false });
+const markdown = markdownit({
+    html: false,
+    linkify: false,
+    breaks: false,
+    langPrefix: 'hljs language-',
+    highlight: highlightCode,
+});
 
 for (const [rule, attribute] of [
     ['link_open', 'href'],

@@ -112,8 +112,22 @@
 .markdown-body pre {
     padding: 1rem;
     overflow-x: auto;
-    background: var(--bs-tertiary-bg);
+    color: #24292e;
+    background: #f6f8fa;
+    border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
+    line-height: 1.6;
+    tab-size: 4;
+}
+
+/* スクロールと余白はpre側にまとめ、ハイライトCSSとの二重適用を避ける。 */
+.markdown-body pre code {
+    display: block;
+    padding: 0;
+    overflow: visible;
+    color: inherit;
+    background: transparent;
+    font-size: .875rem;
 }
 
 .markdown-body table {
