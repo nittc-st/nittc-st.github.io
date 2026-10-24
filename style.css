@@ -3,9 +3,12 @@
 .article-title {
     width: fit-content;
     max-width: 100%;
+    color: var(--bs-primary);
+}
+
+.page-heading {
     padding-inline: 1rem;
     border-inline: 2px solid var(--bs-border-color);
-    color: var(--bs-primary);
 }
 
 .section-heading {

@@ -15,7 +15,10 @@ const navbarUrl = new URL("../components/navbar.html", import.meta.url);
 
 loadComponent("#navbar", navbarUrl).then(() => {
     document.querySelectorAll("#navbar a[href]").forEach(a => {
-        a.href = new URL(a.getAttribute("href"), new URL("../", import.meta.url));
+        a.href = new URL(
+            a.getAttribute("href"),
+            new URL("../", import.meta.url)
+        );
     });
 });
 
