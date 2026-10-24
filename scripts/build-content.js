@@ -89,7 +89,9 @@ async function collectContent(directory, relative = '') {
                     throw new Error('ファイル名には文字・数字・ハイフン・アンダースコアを使用してください。');
                 }
 
-                const source = await readFile(path.join(directory, filename), 'utf8');
+                // gray-matterに渡す前にWindowsの改行をLFへ揃える。
+                const source = (await readFile(path.join(directory, filename), 'utf8'))
+                    .replace(/\r\n/g, '\n');
 
                 if (!/^---\r?\n/.test(source)) {
                     throw new Error('先頭に---で始まるYAML Front Matterが必要です。');

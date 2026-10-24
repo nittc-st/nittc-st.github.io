@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "npm run build && npx --yes http-server@14.1.1 dist -a 127.0.0.1 -p 8000 -c-1",
     "build": "node scripts/build-content.js",
     "test": "node --test"
   },
