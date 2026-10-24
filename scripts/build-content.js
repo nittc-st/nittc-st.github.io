@@ -161,21 +161,23 @@ export async function buildContent(root = projectRoot) {
     // Copy only website directories, never repository metadata, tooling or raw content.
     for (const name of [
         'index.html',
-        'style.css',
+        '404.html',
         'src',
         'js',
         'css',
         'components',
         'img',
+        'games/404-runner/game.html',
     ]) {
         try {
+            await mkdir(path.dirname(path.join(dist, name)), { recursive: true });
             await cp(path.join(root, name), path.join(dist, name), { recursive: true });
         } catch (error) {
             if (error.code !== 'ENOENT') {
                 throw error;
             }
 
-            if (name === 'index.html' || name === 'style.css') {
+            if (name === 'index.html' || name === 'css') {
                 throw error;
             }
         }

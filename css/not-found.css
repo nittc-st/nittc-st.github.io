@@ -1,0 +1,23 @@
+.not-found-page + #footer footer {
+    position: static;
+}
+
+.runner-card {
+    max-width: 48rem;
+    overflow: hidden;
+}
+
+.runner-stage {
+    display: flex;
+    justify-content: center;
+    background: #202428;
+}
+
+.runner-frame {
+    display: block;
+    width: 100%;
+    max-width: 32rem;
+    aspect-ratio: 1;
+    border: 0;
+    background: #000;
+}

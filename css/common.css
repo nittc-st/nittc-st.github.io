@@ -1,4 +1,4 @@
-/* サイトの見出し。Markdown本文の見出しはcss/content.cssで定義する。 */
+/* サイトの見出し。Markdown本文の見出しはcontent.cssで定義する。 */
 .page-heading,
 .article-title {
     width: fit-content;
