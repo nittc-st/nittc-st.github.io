@@ -17,12 +17,13 @@ async function fixture(t) {
         'components',
         'src',
         'js',
+        'css',
     ]) {
         await mkdir(path.join(root, directory), { recursive: true });
     }
 
     await writeFile(path.join(root, 'index.html'), '<h1>Existing site</h1>');
-    await writeFile(path.join(root, 'style.css'), 'body {}');
+    await writeFile(path.join(root, 'css/common.css'), 'body {}');
     await writeFile(path.join(root, 'img/logo.svg'), '<svg/>');
 
     return root;
@@ -89,6 +90,8 @@ test('generates sorted metadata, stripped Markdown, assets, and no drafts or bui
     );
     assert.ok(!(await readdir(path.join(output, 'content/blog'))).includes('draft.md'));
     assert.ok(!(await readdir(output)).includes('package.json'));
+    assert.ok(!(await readdir(output)).includes('style.css'));
+    assert.equal(await readFile(path.join(output, 'css/common.css'), 'utf8'), 'body {}');
 
     // A formerly public post must disappear on the next build when marked draft.
     await writeFile(
@@ -97,6 +100,25 @@ test('generates sorted metadata, stripped Markdown, assets, and no drafts or bui
     );
     await buildContent(root);
     assert.ok(!(await readdir(path.join(output, 'content/blog'))).includes('new.md'));
+});
+
+test('publishes the 404 page and game HTML without game sources or tooling', async t => {
+    const root = await fixture(t);
+    const game = path.join(root, 'games/404-runner');
+    await mkdir(game, { recursive: true });
+    await writeFile(path.join(root, '404.html'), '<h1>404</h1>');
+    await writeFile(path.join(game, 'game.html'), '<canvas></canvas>');
+    await writeFile(path.join(game, 'main.py'), 'import pyxel');
+    await writeFile(path.join(game, 'build_web.py'), 'import subprocess');
+
+    await buildContent(root);
+
+    assert.equal(await readFile(path.join(root, 'dist/404.html'), 'utf8'), '<h1>404</h1>');
+    assert.equal(
+        await readFile(path.join(root, 'dist/games/404-runner/game.html'), 'utf8'),
+        '<canvas></canvas>'
+    );
+    assert.deepEqual(await readdir(path.join(root, 'dist/games/404-runner')), ['game.html']);
 });
 
 test('invalid metadata fails with the filename before replacing dist', async t => {
