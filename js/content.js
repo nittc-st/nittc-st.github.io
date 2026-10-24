@@ -90,6 +90,12 @@ async function showContent() {
     const slug = new URL(location.href).searchParams.get('slug');
     document.querySelector('#page-heading').hidden = slug !== null;
 
+    const description = document.querySelector('#page-description');
+
+    if (description) {
+        description.hidden = slug !== null;
+    }
+
     try {
         const articles = await fetchContent(new URL('index.json', contentUrl), true);
 

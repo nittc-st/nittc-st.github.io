@@ -1,4 +1,4 @@
-import markdownit from 'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/+esm';
+import markdownit from 'https://cdn.jsdelivr.net/npm/markdown-it@14.3.3/+esm';
 import hljs from 'https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/lib/common/+esm';
 import http from 'https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/lib/languages/http/+esm';
 

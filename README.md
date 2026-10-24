@@ -1,26 +1,62 @@
 # nittc-st.github.io
 
-```https://nittc-st.github.io```
+[ソフテク公式サイト](https://nittc-st.github.io)
 
-## ディレクトリ構成
-- `components/`
-    - footerとheader(navbar)要素を配置しています．
-- `img/`
-    - 画像ファイルの配置場所です．
-- `js/`
-    - 各htmlファイルでfooterとheader(navbar)要素を呼び出すスクリプトです．
-- `src/`
-    - `index.html`以外のhtmlファイルを配置しています．
+- [このサイトの仕様はこちら(ComingSoon)]()
 
-## Markdownコンテンツの投稿
+# 記事・資料の投稿ガイド
 
-記事（ソフテク知恵袋）は `content/blog/`、資料は `content/document/` の直下に `.md` ファイルを作成します。両ページは同じJavaScriptとUIを使い、`data-content-type` で種別だけを切り替えます。
+知恵袋及び資料への投稿は、次の流れで行います。
+
+**ブランチを切る → Markdownを書く → PRで内容を確認する → マージして公開する**
+
+`main`へ直接pushせず、Pull Request（PR）で誰かにレビューしてもらってから公開してください。
+
+## 1. ブランチを切る
+
+リポジトリを手元に用意し、作業中の変更がない状態で、最新の`main`から投稿用ブランチを作成します。
+
+```sh
+git switch main
+git pull --ff-only origin main
+git switch -c blog/git-basic
+```
+
+ブランチ名は、投稿先に合わせて次の形式にします。
+
+| 投稿の種類 | ブランチ名 | 例 |
+| --- | --- | --- |
+| ソフテク知恵袋 | `blog/<title>` | `blog/git-basic` |
+| 資料置き場 | `doc/<title>` | `doc/protocol` |
+
+`<title>`は表示タイトルではなく、Markdownのファイル名から拡張子を除いた名前（slug）に合わせます。公開済みの記事を修正する場合も、同じ命名規則で新しいブランチを作成します。
+
+## 2. Markdownを書く
+
+### 投稿先とファイル名
+
+| 投稿の種類 | 配置先 |
+| --- | --- |
+| ソフテク知恵袋 | `content/blog/` |
+| 資料置き場 | `content/document/` |
+
+それぞれのディレクトリ直下に`.md`ファイルを作成します。例えば、Gitの記事なら`content/blog/git-basic.md`です。
+
+ファイル名には文字・数字・`-`・`_`を使用できます。拡張子を除いた名前が記事のURLに使われる**slug**になります。日本語の表示タイトルとは別に、内容が分かる名前を付けてください。
+
+例：`git-basic.md` → `src/blog.html?slug=git-basic`
+
+公開後にファイル名を変更するとURLも変わるため、注意してください。
+
+### Front Matterと本文
+
+ファイルの先頭に、`---`で囲んだ記事情報（Front Matter）をYAML形式で記述します。その下にMarkdownで本文を書きます。
 
 ```md
 ---
 title: Gitの基本操作
 description: Gitの基本的な操作方法を解説します。
-date: 2026-10-24
+date: 2026-10-25
 tags:
   - Git
   - 初心者向け
@@ -29,53 +65,63 @@ draft: false
 
 ## Gitとは
 
-ここから本文を記述します。
+Gitは分散型バージョン管理システムです。
+
+### 変更を記録する
+
+ここに操作方法を記述します。
 ```
 
-- `title` は必須の空でない文字列です。
-- `description` は任意の文字列、`date` は任意の実在する日付（`YYYY-MM-DD`）です。
-- `tags` は文字列の配列、`draft` は真偽値です。省略時はそれぞれ空配列・`false` になります。
-- YAML Front Matterはファイル先頭の `---` 行で開始します。YAMLの重複キーや不正な型はビルドエラーになります。
-- slugは拡張子を除いたファイル名です。例: `git-basic.md` → `git-basic`。ファイル名には文字・数字・`-`・`_` を使用してください。日本語タイトルとは独立しています。
-- 一覧は日付の降順、同日・日付なしはslug順です。日付なしは末尾に表示されます。
-- 本文は `src/blog.html?slug=git-basic` のようなURLで表示します。ページ側でタイトルが表示されるため、本文の見出しは `##` から始められます。
+| 項目 | 必須 | 書き方 |
+| --- | --- | --- |
+| `title` | 必須 | 記事のタイトル。空でない文字列を指定します。 |
+| `description` | 任意 | 一覧に表示する短い概要です。 |
+| `date` | 任意 | 公開日・更新日を`YYYY-MM-DD`形式で指定します。 |
+| `tags` | 任意 | タグの配列です。上の例のほか、`tags: [Git, 初心者向け]`とも書けます。 |
+| `draft` | 任意 | 下書きは`true`、公開対象は`false`です。省略時は`false`になります。 |
+
+- `draft`は文字列ではなく真偽値です。`"false"`のように引用符で囲まないでください。
+- `title`などに同じ項目を重複して書いたり、存在しない日付を指定したりするとビルドエラーになります。
+- タイトルにコロンなどのYAML記号を含む場合は、`title: "Git: 基本操作"`のように引用符で囲んでください。
+- `date`の新しい記事から一覧に並びます。日付なしの記事は末尾に表示されます。
+- 記事タイトルは`title`から表示されるので、本文の見出しは`##`から始められます。見出しからアウトラインが自動生成されます。
+- 本文中の生HTMLは無効です。基本的なMarkdown記法を使ってください。
 
 ### 画像・添付ファイル
 
-画像は、サイト共通のものと記事専用のものを分けて配置します。記事専用画像は、種別ごとの `img/` 内で記事のslugごとにまとめます。
+記事専用の画像は、投稿先の`img/`内に、slugと同じ名前のフォルダーを作って配置します。
 
 ```text
-img/                              # ロゴなど、サイト共通の画像
 content/
   blog/
     git-basic.md
     img/
       git-basic/
         screenshot.png
-  document/
-    protocol.md
-    img/
-      protocol/
-        diagram.png
 ```
 
-例えば `content/document/protocol.md` から、その記事の画像を次のように参照します。
+`git-basic.md`からは次のように参照します。画像には内容を説明する代替テキストを付けてください。
 
 ```md
-![構成図](img/protocol/diagram.png)
+![Gitの変更履歴画面](img/git-basic/screenshot.png)
 ```
 
-画像を使う記事だけslug名のフォルダーを作成してください。上記の画像・ファイル名は配置例です。相対パスはMarkdownファイルを基準に解決され、記事専用画像もビルド時に同じ構成で `dist/` へコピーされます。
+資料側も同様に、`content/document/img/<slug>/`へ配置します。ルートの`img/`はロゴなどサイト共通画像用なので、記事専用画像は置かないでください。
 
-PDF等の添付ファイルは、例えば `content/document/assets/protocol/guide.pdf` に配置し、`[資料](assets/protocol/guide.pdf)` のようにリンクできます。別の記事への `[記事](git-basic.md)` や `[資料](../document/guide.md)` も使用できます（ファイル名は実際の投稿に合わせてください）。
+PDF等は、例えば`content/blog/assets/git-basic/guide.pdf`に配置し、次のようにリンクします。
 
-`draft: true` のMarkdownは一覧・公開ファイルの両方から除外します。ただし、画像・添付ファイルは共有資産として公開されるため、下書き専用の秘密情報は配置しないでください。GitHubリポジトリ自体にコミットした情報の非公開化を保証する機能ではありません。
+```md
+[補足資料（PDF）](assets/git-basic/guide.pdf)
+```
 
-本文中の生HTMLは無効です。Markdown変換はブラウザ内で、バージョン固定したCDNのmarkdown-itを使用します。CDNへの接続が必要です。
+画像・添付ファイルの相対パスはMarkdownファイルを基準にします。別の記事にも`[関連記事](other-article.md)`のようにリンクできます。ファイル名は実在するものを指定してください。
 
-### コードのシンタックスハイライト
+> **公開してはいけない情報はコミットしないでください。**
+> `draft: true`のMarkdownはサイトへの公開対象から外れますが、画像・添付ファイルは公開対象です。また、下書きでもGitHubリポジトリ自体には内容が残ります。
 
-コードブロックの開始行で言語を指定すると、自動で色分けされます。
+### コードを書く
+
+コードブロックに言語を指定すると、シンタックスハイライトが付きます。
 
 ````md
 ```js
@@ -84,37 +130,70 @@ console.log(message);
 ```
 ````
 
-JavaScript（`js`）、TypeScript（`ts`）、Python（`py`）、シェル（`sh`）、HTML、CSS、JSON、YAML、HTTPなどに対応します。言語未指定・未対応の場合は色分けせず表示します。コード中のHTMLは実行されず、長い行はコードブロック内で横スクロールできます。
+`js`、`ts`、`py`、`sh`、`html`、`css`、`json`、`yaml`、`http`などが使えます。言語未指定・未対応の場合は通常のコードとして表示されます。
 
-highlight.js 11.12.0とGitHub系の明るいテーマをバージョン固定のCDNから読み込みます。npm依存やブラウザ用のビルド処理は追加していません。
+### 手元で表示を確認する
 
-### 記事のアウトライン
-
-記事タイトルと本文の見出し（`#`〜`######`）から、階層付きアウトラインを自動生成します。PCでは左側に追従表示し、スマートフォンでは本文上部の「アウトライン」ボタンで開閉できます。スクロール中の現在位置も強調されます。本文に見出しがない記事では表示しません。
-
-見出しには日本語対応のIDが自動で付き、同名見出しは連番で区別します。アウトラインのリンク先URLを共有することで、記事内の見出しへ直接移動できます。見出し名を変更するとリンク先IDも変わります。
-
-レイアウトは [mkilnの同梱CSS・アウトライン](https://github.com/sankaku789/mkiln/tree/main/internal/assets) を参考にし、Bootstrapのグリッド・Collapse・Navで構成しています。現在位置の判定はVanilla JavaScriptで行います。
-
-## ローカル検証
-
-Node.js 22以上を使用します。npm依存関係はFront Matter解析とテスト用で、ブラウザのビルドは不要です。
+まずNode.js 22以上で記事をビルドします。
 
 ```sh
 npm ci
 npm test
 npm run build
+```
+
+その後、localhostを起動して内容を確認してください．
+
+例えば、次のどちらかを実行します。
+
+```sh
+# Node.jsを使う場合（初回はサーバー用パッケージを取得します）
+npx http-server@14.1.1 dist -p 8000 -c-1
+```
+
+```sh
+# Python 3を使う場合
 python3 -m http.server 8000 --directory dist
 ```
 
-`http://localhost:8000/src/blog.html` と `http://localhost:8000/src/document.html` を開いて確認します。`file://` ではなくHTTPサーバーを使ってください。
+VS CodeのLive Serverなどを使っても構いません。ソースではなく、ビルド済みの`dist/`を配信してください。
 
-`scripts/build-content.js` がYAMLの解析・検証を行い、既存サイトの静的ファイル、Front Matter除去済みMarkdown、画像・添付ファイル、各種別の `index.json` を `dist/` に生成します。`index.json` の手動編集は不要です。`dist/` は毎回再生成され、Gitの追跡対象外です。
+上記のコマンド例では、次のURLから確認できます。別のツールを使う場合は、そのサーバーのURL・ポート番号に合わせてください。
 
-## GitHub Pagesへのデプロイ
+- 知恵袋：<http://localhost:8000/src/blog.html>
+- 資料置き場：<http://localhost:8000/src/document.html>
 
-1. リポジトリの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** に設定します。
-2. Markdownと画像等をコミットし、`main` にpushします。
-3. `.github/workflows/deploy.yml` が依存関係のインストール、テスト、生成、`dist/` のPagesデプロイを実行します。Actions画面から手動実行も可能です。
+HTMLファイルの直接起動（`file://`）ではなく、HTTP経由で開いてください。記事や画像を変更したら、再度`npm run build`を実行してブラウザを再読み込みします。
 
-不正なメタデータがあるとファイル名付きのエラーで処理が停止し、デプロイしません。ビルド処理はMarkdownをHTMLに変換せず、ブラウザの `js/markdown.js` が描画を担当します。既存のnavbar・footerの読み込みは `js/common.js` のままです。
+`draft: true`の記事はプレビューにも表示されません。表示確認のために`false`へ変更した場合は、PRへ出す前に意図した値か確認してください。生成物の`dist/`はコミットしません。
+
+## 3. PRを出し、内容を確認する
+
+記事と必要な画像・添付ファイルをコミットし、投稿用ブランチをpushします。以下は記事だけを追加する例です。画像・添付がある場合は、そのファイルも個別に`git add`してください。
+
+```sh
+git status
+git add content/blog/git-basic.md
+git commit -m "Gitの基本操作の記事を追加"
+git push -u origin blog/git-basic
+```
+
+GitHubで**Compare & pull request**を開き、マージ先（base）を`main`、投稿元（compare）を自分のブランチにしてPRを作成します。
+
+PRには、記事の目的・想定読者・追加や変更した内容・確認方法を記載し、他のメンバーにレビューを依頼してください。投稿者とレビュー担当者は、次の観点で内容を確認します。
+
+指摘があれば同じブランチで修正し、コミット・pushします。PRに変更が反映されるので、再確認を依頼してください。
+
+## 4. マージして公開する
+
+レビュー担当者と内容に問題がないことを確認したら、権限のあるメンバーがPRを`main`へマージします。
+
+マージ後、GitHub Actionsが記事一覧の生成とGitHub Pagesへのデプロイを実行します。完了したら[公開サイト](https://nittc-st.github.io)で記事・画像・リンクを確認してください。
+
+公開されない場合は、次を確認します。
+
+- PRが`main`へマージされているか
+- `draft: true`のままになっていないか
+- GitHubの**Actions**でデプロイが成功しているか（反映まで少し時間がかかります）
+
+ビルドが失敗している場合は、ログに表示されたファイルやFront Matterを確認し、修正用ブランチとPRで対応してください。
