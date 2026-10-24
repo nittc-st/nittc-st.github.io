@@ -27,3 +27,27 @@
     margin-right: 1.0rem;
     color: var(--bs-secondary-color);
 }
+
+/* ミニゲームのページ。Pyxelの画面(160x120)に合わせて4:3で表示する。 */
+.games-frame-wrapper {
+    max-width: 640px;
+    margin-inline: auto;
+}
+
+.games-frame {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 0;
+    border-radius: var(--bs-border-radius);
+    background: #000;
+}
+
+/* トップページのフッター右下に置く、ミニゲームへの入り口 */
+.games-link {
+    z-index: 1031;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    line-height: 1.9rem;
+}
