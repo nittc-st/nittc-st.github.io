@@ -77,6 +77,20 @@ def text_center(y, s, col, bcol=None):
         text_border(x, y, s, col, bcol)
 
 
+def text_big(y, s, col, bcol):
+    """ふちどり文字をドットごと2倍に拡大して、画面中央に描く。"""
+    w, h = text_width(s) + 2, 10
+    img = pyxel.Image(w, h)
+    img.cls(0)
+    for dx in (0, 1, 2):
+        for dy in (0, 1, 2):
+            if dx != 1 or dy != 1:
+                img.text(dx, dy, s, bcol, FONT)
+    img.text(1, 1, s, col, FONT)
+    # scale は元の大きさで置いたときの中心を基準に拡大されるので、中心が (W / 2, y + h) に来るよう置く
+    pyxel.blt(W / 2 - w / 2, y + h / 2, img, 0, 0, w, h, 0, scale=2)
+
+
 def cursor(x, y, col):
     pyxel.tri(x, y + 1, x, y + 7, x + 4, y + 4, col)
 
