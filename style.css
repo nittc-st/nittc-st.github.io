@@ -1,4 +1,28 @@
-.title::before {
+/* サイトの見出し。Markdown本文の見出しはcss/content.cssで定義する。 */
+.page-heading,
+.article-title {
+    width: fit-content;
+    max-width: 100%;
+    color: var(--bs-primary);
+}
+
+.page-heading {
+    padding-inline: 1rem;
+    border-inline: 2px solid var(--bs-border-color);
+}
+
+.section-heading {
+    font-size: calc(1.275rem + .3vw);
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 1200px) {
+    .section-heading {
+        font-size: 1.5rem;
+    }
+}
+
+.section-heading::before {
     content: "›";
     margin-right: 1.0rem;
     color: var(--bs-secondary-color);
