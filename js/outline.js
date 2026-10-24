@@ -1,7 +1,8 @@
 // 記事の見出しに重複しないIDを付け、階層付きアウトラインを作成する関数
 export function addOutline(article) {
     const headings = [...article.querySelectorAll('h1, h2, h3, h4, h5, h6')];
-    const usedIds = new Set();
+    // この後に作成するメニューのIDも、見出しに割り当てないよう予約する。
+    const usedIds = new Set(['article-outline', 'article-outline-links']);
 
     for (const heading of headings) {
         const base = heading.textContent

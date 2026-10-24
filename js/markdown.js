@@ -41,30 +41,35 @@ for (const [rule, attribute] of [
         const value = token.attrGet(attribute);
 
         if (value && !value.startsWith('#')) {
-            const url = new URL(value, environment.markdownUrl);
+            try {
+                const url = new URL(value, environment.markdownUrl);
 
-            // Markdown files in either collection open in the shared viewer.
-            const contentRoot = new URL('../content/', import.meta.url);
+                // Markdown files in either collection open in the shared viewer.
+                const contentRoot = new URL('../content/', import.meta.url);
 
-            if (
-                attribute === 'href'
-                && url.origin === contentRoot.origin
-                && url.pathname.startsWith(contentRoot.pathname)
-            ) {
-                const match = url.pathname
-                    .slice(contentRoot.pathname.length)
-                    .match(/^(blog|document)\/([^/]+)\.md$/);
+                if (
+                    attribute === 'href'
+                    && url.origin === contentRoot.origin
+                    && url.pathname.startsWith(contentRoot.pathname)
+                ) {
+                    const match = url.pathname
+                        .slice(contentRoot.pathname.length)
+                        .match(/^(blog|document)\/([^/]+)\.md$/);
 
-                if (match) {
-                    const page = new URL(`../src/${match[1]}.html`, import.meta.url);
-                    page.searchParams.set('slug', decodeURIComponent(match[2]));
-                    page.hash = url.hash;
-                    token.attrSet(attribute, page.href);
+                    if (match) {
+                        const page = new URL(`../src/${match[1]}.html`, import.meta.url);
+                        page.searchParams.set('slug', decodeURIComponent(match[2]));
+                        page.hash = url.hash;
+                        token.attrSet(attribute, page.href);
+                    } else {
+                        token.attrSet(attribute, url.href);
+                    }
                 } else {
                     token.attrSet(attribute, url.href);
                 }
-            } else {
-                token.attrSet(attribute, url.href);
+            } catch {
+                // 不正なURLはリンク先・画像URLだけを外し、記事の描画は続ける。
+                token.attrs = token.attrs.filter(([name]) => name !== attribute);
             }
         }
 
