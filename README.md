@@ -134,26 +134,25 @@ console.log(message);
 
 ### 手元で表示を確認する
 
-まずNode.js 22以上で記事をビルドします。
+Node.js 22以上で、次を実行します。WindowsのPowerShellでも同じコマンドを使えます。
 
 ```sh
 npm ci
-npm test
-npm run build
+npm run dev
 ```
 
-その後、localhostを起動して内容を確認してください．
+記事をビルドした後、<http://localhost:8000/>で確認用サーバーを起動します。初回は`npx`で`http-server@14.1.1`を取得するため、ネット接続が必要です。停止するときはCtrl+Cを押してください。
 
-例えば、次のどちらかを実行します。
+サーバーを別のツールで起動する場合は、先に`npm run build`を実行してください。例えば、次のどちらかを使えます。
 
 ```sh
 # Node.jsを使う場合（初回はサーバー用パッケージを取得します）
-npx http-server@14.1.1 dist -p 8000 -c-1
+npx http-server@14.1.1 dist -a 127.0.0.1 -p 8000 -c-1
 ```
 
 ```sh
 # Python 3を使う場合
-python3 -m http.server 8000 --directory dist
+python3 -m http.server 8000 --bind 127.0.0.1 --directory dist
 ```
 
 VS CodeのLive Serverなどを使っても構いません。ソースではなく、ビルド済みの`dist/`を配信してください。
@@ -163,7 +162,7 @@ VS CodeのLive Serverなどを使っても構いません。ソースではな�
 - 知恵袋：<http://localhost:8000/src/blog.html>
 - 資料置き場：<http://localhost:8000/src/document.html>
 
-HTMLファイルの直接起動（`file://`）ではなく、HTTP経由で開いてください。記事や画像を変更したら、再度`npm run build`を実行してブラウザを再読み込みします。
+HTMLファイルの直接起動（`file://`）ではなく、HTTP経由で開いてください。自動ビルド・自動リロードは行わないため、記事や画像を変更したら、別のターミナルで再度`npm run build`を実行してブラウザを再読み込みします。
 
 `draft: true`の記事はプレビューにも表示されません。表示確認のために`false`へ変更した場合は、PRへ出す前に意図した値か確認してください。生成物の`dist/`はコミットしません。
 

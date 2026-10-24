@@ -99,6 +99,24 @@ test('generates sorted metadata, stripped Markdown, assets, and no drafts or bui
     assert.ok(!(await readdir(path.join(output, 'content/blog'))).includes('new.md'));
 });
 
+test('parses Windows CRLF Markdown without modifying the source', async t => {
+    const root = await fixture(t);
+    const filename = path.join(root, 'content/document/1-cmd.md');
+    const source = '---\r\n\r\ntitle: 通信1 演習1\r\ndraft: false\r\ndate: 2026-03-01\r\ntags: [通信, 演習資料]\r\n---\r\n\r\n## 演習1\r\n';
+    await writeFile(filename, source);
+
+    await buildContent(root);
+
+    const index = JSON.parse(await readFile(path.join(root, 'dist/content/document/index.json')));
+    assert.equal(index[0].title, '通信1 演習1');
+    assert.deepEqual(index[0].tags, ['通信', '演習資料']);
+    assert.equal(
+        await readFile(path.join(root, 'dist/content/document/1-cmd.md'), 'utf8'),
+        '\n## 演習1\n'
+    );
+    assert.equal(await readFile(filename, 'utf8'), source);
+});
+
 test('invalid metadata fails with the filename before replacing dist', async t => {
     const root = await fixture(t);
     await mkdir(path.join(root, 'dist'));
